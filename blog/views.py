@@ -23,3 +23,8 @@ class BlogListView(generic.ListView):
     """Generic class-based view for a list of all blogs."""
     model = Blog
     paginate_by = 5
+
+
+class BlogDetailView(generic.DetailView):
+    """Generic class-based detail view for blog post."""
+    model = Blog
