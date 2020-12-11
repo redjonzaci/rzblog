@@ -28,3 +28,8 @@ class BlogListView(generic.ListView):
 class BlogDetailView(generic.DetailView):
     """Generic class-based detail view for blog post."""
     model = Blog
+
+
+class BloggerListView(generic.ListView):
+    """Generic class-based view for a list of all bloggers."""
+    model = Blogger
