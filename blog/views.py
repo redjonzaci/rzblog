@@ -19,3 +19,7 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
+class BlogListView(generic.ListView):
+    """Generic class-based view for a list of all blogs."""
+    model = Blog
+    paginate_by = 5
