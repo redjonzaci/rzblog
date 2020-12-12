@@ -43,7 +43,7 @@ class BlogComment(models.Model):
     """Model representing a comment on a blog post."""
     description = models.TextField(max_length=400, help_text="Enter your comment here.")
     post_date = models.DateTimeField(default=timezone.localtime())
-    author = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
 
     class Meta:
