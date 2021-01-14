@@ -24,6 +24,7 @@ class Blog(models.Model):
     """Model representing a blog post."""
     title = models.CharField(max_length=200)
     author = models.ForeignKey(Blogger, on_delete=models.SET_NULL, null=True)
+    header_image = models.ImageField(null=True, blank=True, upload_to="images/")
     description = models.TextField(max_length=2000, help_text="Enter your blog text here.")
     post_date = models.DateTimeField(default=timezone.localtime())
 
