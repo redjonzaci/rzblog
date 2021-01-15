@@ -1,10 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from django.views.generic.edit import CreateView
 
+from .forms import CreateForm
 from .models import Blog, BlogComment, Blogger
 
 
@@ -48,7 +49,9 @@ class BlogListByAuthorView(generic.ListView):
     template_name = 'blog/blog_list_by_author.html'
 
     def get_queryset(self):
-        """Return list of Blog objects by Blogger (author id specified in URL)"""
+        """
+        Return list of Blog objects by Blogger (author id specified in URL)
+        """
         id = self.kwargs['pk']
         target_blogger = get_object_or_404(Blogger, pk=id)
         return Blog.objects.filter(author=target_blogger)
@@ -80,7 +83,8 @@ class BlogCommentCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         """
-        Add author and associated blog to form data before setting it as valid (so it is saved to model)
+        Add author and associated blog to form data
+        before setting it as valid (so it is saved to model)
         """
         # Add logged-in user as author of comment
         form.instance.author = self.request.user
@@ -94,3 +98,22 @@ class BlogCommentCreate(LoginRequiredMixin, CreateView):
         After posting comment return to associated blog.
         """
         return reverse('blog-detail', kwargs={'pk': self.kwargs['pk'], })
+
+
+class BlogPostCreate(LoginRequiredMixin, CreateView):
+    """Form for adding a blog post. Requires login. """
+    model = Blog
+    form_class = CreateForm
+    template_name = "blog/add_post.html"
+
+    def form_valid(self, form):
+        blog = form.save(commit=False)
+        blog.author = Blogger.objects.get(user=self.request.user)
+        blog.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        """
+        After posting comment return to associated blog.
+        """
+        return reverse('blogs')

@@ -27,4 +27,8 @@ urlpatterns = [
         'blog/<int:pk>/comment/',
         views.BlogCommentCreate.as_view(),
         name='blog_comment'),
+    path(
+        'blog/add_post/',
+        views.BlogPostCreate.as_view(),
+        name='add_post'),
 ]
