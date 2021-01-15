@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 # Used include() to add paths from the blog app
-from django.urls import path, include
+from django.urls import include, path
 # Redirected the base URL to the blog app
 from django.views.generic import RedirectView
 
