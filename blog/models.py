@@ -26,7 +26,7 @@ class Blog(models.Model):
     author = models.ForeignKey(Blogger, on_delete=models.SET_NULL, null=True)
     header_image = models.ImageField(null=True, blank=True, upload_to="images/")
     description = models.TextField(max_length=2000, help_text="Enter your blog text here.")
-    post_date = models.DateTimeField(default=timezone.localtime())
+    post_date = models.DateTimeField(default=timezone.localtime)
 
     class Meta:
         ordering = ['-post_date']
@@ -43,7 +43,7 @@ class Blog(models.Model):
 class BlogComment(models.Model):
     """Model representing a comment on a blog post."""
     description = models.TextField(max_length=400, help_text="Enter your comment here.")
-    post_date = models.DateTimeField(default=timezone.localtime())
+    post_date = models.DateTimeField(default=timezone.localtime)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
 
