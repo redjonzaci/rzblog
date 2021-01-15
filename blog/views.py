@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 
 from .forms import CreateForm
 from .models import Blog, BlogComment, Blogger
@@ -130,3 +130,9 @@ class BlogPostCreate(LoginRequiredMixin, CreateView):
         After posting comment return to associated blog.
         """
         return reverse('blogs')
+
+
+class BlogPostUpdate(LoginRequiredMixin, UpdateView):
+    model = Blog
+    template_name = "blog/edit_post.html"
+    fields = ['title', 'description', ]

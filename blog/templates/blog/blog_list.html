@@ -5,11 +5,14 @@
 
   {% if blog_list %}
   <ul>
-
+    
     {% for blog in blog_list %}
     <li>
       <a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a> ({{blog.post_date}})
       — <a href="{% url 'blogs-by-author' blog.author.pk %}">{{ blog.author }}</a>
+      {% if user.is_authenticated and user.id == blog.author.id %}
+        — <small>(<a href="{% url 'edit_post' blog.pk %}">Edit</a>)</small>
+      {% endif %}
     </li>
     {% endfor %}
 

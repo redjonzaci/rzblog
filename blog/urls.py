@@ -35,4 +35,8 @@ urlpatterns = [
         'like/<int:pk>',
         views.LikeView, 
         name='like_post'),
+    path(
+        'blog/edit/<int:pk>',
+        views.BlogPostUpdate.as_view(),
+        name='edit_post'),
 ]
