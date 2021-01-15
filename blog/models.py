@@ -33,6 +33,10 @@ class Blog(models.Model):
         max_length=2000,
         help_text="Enter your blog text here.")
     post_date = models.DateTimeField(default=timezone.localtime)
+    likes = models.ManyToManyField(User, related_name='blog_likes')
+
+    def total_likes(self):
+        return self.likes.count()
 
     class Meta:
         ordering = ['-post_date']

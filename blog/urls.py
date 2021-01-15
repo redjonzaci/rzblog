@@ -31,4 +31,8 @@ urlpatterns = [
         'blog/add_post/',
         views.BlogPostCreate.as_view(),
         name='add_post'),
+    path(
+        'like/<int:pk>',
+        views.LikeView, 
+        name='like_post'),
 ]

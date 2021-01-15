@@ -5,10 +5,24 @@
   {% if blog.header_image %}
     <img src="{{ blog.header_image.url }}">
   {% endif %}
-  <p><strong>Post date</strong> {{ blog.post_date }}</p>
-  <p><strong>Author:</strong> <a href="{% url 'blogs-by-author' blog.author.pk %}">{{ blog.author }}</a></p>
+  <p>
+    <strong>Post date</strong> {{ blog.post_date }}
+  </p>
+  <p>
+    <strong>Author:</strong>
+    <a href="{% url 'blogs-by-author' blog.author.pk %}">{{ blog.author }}</a>
+  </p>
   <p><strong>Description:</strong></p>
   <p style="white-space:pre-wrap;">{{ blog.description }}</p>
+
+  <hr>
+  <form action="{% url 'like_post' blog.pk %}" method="post">
+    {% csrf_token %}
+    <button type="submit", name="blog_id",
+      value="{{ blog.id }}", class="btn btn-primary btn-sm">Like</button>
+      — {{ total_likes }} like(s)
+  </form>
+
 
   <div style="margin-left:20px;margin-top:20px">
     <h4>Comments</h4>

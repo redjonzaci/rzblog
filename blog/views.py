@@ -26,6 +26,12 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 
+def LikeView(request, pk):
+    blog = get_object_or_404(Blog, id=request.POST.get('blog_id'))
+    blog.likes.add(request.user)
+    return HttpResponseRedirect(reverse('blog-detail', args=[str(pk)]))
+
+
 class BlogListView(generic.ListView):
     """Generic class-based view for a list of all blogs."""
     model = Blog
@@ -35,6 +41,13 @@ class BlogListView(generic.ListView):
 class BlogDetailView(generic.DetailView):
     """Generic class-based detail view for blog post."""
     model = Blog
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_post = get_object_or_404(Blog, id=self.kwargs['pk'])
+        total_likes = current_post.total_likes()
+        context['total_likes'] = total_likes
+        return context
 
 
 class BloggerListView(generic.ListView):
