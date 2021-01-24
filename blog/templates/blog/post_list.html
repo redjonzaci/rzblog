@@ -10,7 +10,7 @@
     <li>
       <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> ({{post.post_date}})
       — <a href="{% url 'posts-by-author' post.author.pk %}">{{ post.author }}</a>
-      {% if user.is_authenticated and user.id == blog.author.id %}
+      {% if user.is_authenticated and user.username == post.author.user.username %}
         — <small>(<a href="{% url 'edit_post' post.pk %}">Edit</a>)</small>
       {% endif %}
     </li>
