@@ -33,10 +33,10 @@ urlpatterns = [
         name='add_post'),
     path(
         'like/<int:pk>',
-        views.LikeView, 
+        views.LikeView,
         name='like_post'),
     path(
-        'blog/edit/<int:pk>',
+        'edit/<int:pk>',
         views.BlogPostUpdate.as_view(),
         name='edit_post'),
 ]

@@ -127,7 +127,7 @@ class BlogPostCreate(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         """
-        After posting comment return to associated blog.
+        After posting the blog post return to the list of blogs.
         """
         return reverse('blogs')
 

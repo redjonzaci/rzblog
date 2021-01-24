@@ -70,3 +70,27 @@ class BlogComment(models.Model):
         else:
             titlestring = self.description
         return titlestring
+
+
+class Report(models.Model):
+    """Model representing a user report about a blog post."""
+    subject = models.CharField(max_length=50)
+    description = models.TextField(
+        max_length=400,
+        help_text="Enter your problem here.")
+    sender_email = models.EmailField(max_length=50)
+    report_date = models.DateTimeField(default=timezone.localtime)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['report_date']
+
+    def __str__(self):
+        """String for representing the Model object."""
+        len_title = 50
+        if len(self.description) > len_title:
+            titlestring = self.description[:len_title] + "..."
+        else:
+            titlestring = self.description
+        return titlestring
