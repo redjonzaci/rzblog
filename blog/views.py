@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView
 
@@ -137,3 +137,9 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
     model = Post
     template_name = "blog/edit_post.html"
     fields = ['title', 'description', ]
+
+class PostDelete(LoginRequiredMixin, DeleteView):
+    """Form for deleting a blog post. Requires login of post author. """
+    model = Post
+    template_name = "blog/delete_post.html"
+    success_url = reverse_lazy('posts')

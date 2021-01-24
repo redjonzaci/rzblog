@@ -12,6 +12,7 @@
       — <a href="{% url 'posts-by-author' post.author.pk %}">{{ post.author }}</a>
       {% if user.is_authenticated and user.username == post.author.user.username %}
         — <small>(<a href="{% url 'edit_post' post.pk %}">Edit</a>)</small>
+        — <small>(<a href="{% url 'delete_post' post.pk %}">Delete</a>)</small>
       {% endif %}
     </li>
     {% endfor %}

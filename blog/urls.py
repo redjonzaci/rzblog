@@ -39,4 +39,8 @@ urlpatterns = [
         'edit/<int:pk>',
         views.PostUpdate.as_view(),
         name='edit_post'),
+    path(
+        '<int:pk>/delete/',
+        views.PostDelete.as_view(),
+        name='delete_post'),
 ]
