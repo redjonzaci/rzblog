@@ -2,7 +2,7 @@
 
 {% block content %}
   <p>Post your comment for:
-    <a href="{% url 'blog-detail' blog.pk %}">{{blog.title}}</a></p>
+    <a href="{% url 'post-detail' post.pk %}">{{post.title}}</a></p>
 
   <form action="" method="post">
   {% csrf_token %}

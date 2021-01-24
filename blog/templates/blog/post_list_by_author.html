@@ -6,13 +6,13 @@
   <h3>Bio</h3>
   <p>{{blogger.bio}}</p>
 
-  {% if blog_list %}
+  {% if post_list %}
   <h3>Blogs list</h3>
   <ul>
     {% for blog in blog_list %}
     <li>
-      <a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a> 
-      ({{blog.post_date}})
+      <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> 
+      ({{post.post_date}})
     </li>
     {% endfor %}
   </ul>

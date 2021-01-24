@@ -8,28 +8,28 @@ urlpatterns = [
         views.index,
         name='index'),
     path(
-        'blogs/',
-        views.BlogListView.as_view(),
-        name='blogs'),
+        'posts/',
+        views.PostListView.as_view(),
+        name='posts'),
     path(
-        'blog/<int:pk>',
-        views.BlogDetailView.as_view(),
-        name='blog-detail'),
+        'post/<int:pk>',
+        views.PostDetailView.as_view(),
+        name='post-detail'),
     path(
         'bloggers/',
         views.BloggerListView.as_view(),
         name='bloggers'),
     path(
         'blogger/<int:pk>',
-        views.BlogListByAuthorView.as_view(),
-        name='blogs-by-author'),
+        views.PostListByAuthorView.as_view(),
+        name='posts-by-author'),
     path(
-        'blog/<int:pk>/comment/',
-        views.BlogCommentCreate.as_view(),
-        name='blog_comment'),
+        'post/<int:pk>/comment/',
+        views.CommentCreate.as_view(),
+        name='comment'),
     path(
-        'blog/add_post/',
-        views.BlogPostCreate.as_view(),
+        'add_post/',
+        views.PostCreate.as_view(),
         name='add_post'),
     path(
         'like/<int:pk>',
@@ -37,6 +37,6 @@ urlpatterns = [
         name='like_post'),
     path(
         'edit/<int:pk>',
-        views.BlogPostUpdate.as_view(),
+        views.PostUpdate.as_view(),
         name='edit_post'),
 ]
