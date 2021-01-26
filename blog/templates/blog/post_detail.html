@@ -49,4 +49,11 @@
           to add a new comment</p>
     {% endif %}
   </div>
+
+  <hr>
+  <form action="{% url 'report_post' post.pk %}" method="post">
+    {% csrf_token %}
+    <button type="submit", name="report_id",
+      value="{{ post.id }}", class="btn btn-primary btn-sm">Report</button>
+  </form>
 {% endblock %}

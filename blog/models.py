@@ -92,9 +92,4 @@ class Report(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        len_title = 50
-        if len(self.description) > len_title:
-            titlestring = self.description[:len_title] + "..."
-        else:
-            titlestring = self.description
-        return titlestring
+        return self.subject

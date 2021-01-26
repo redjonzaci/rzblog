@@ -33,7 +33,7 @@ urlpatterns = [
         name='add_post'),
     path(
         'like/<int:pk>',
-        views.LikeView,
+        views.like,
         name='like_post'),
     path(
         'edit/<int:pk>',
@@ -51,4 +51,12 @@ urlpatterns = [
         'post/<int:pk>/comment/delete/',
         views.CommentDelete.as_view(),
         name='delete_comment'),
+    path(
+        'post/<int:pk>/report/',
+        views.ReportCreate.as_view(),
+        name='report_post'),
+    path(
+        'report/success/',
+        views.success,
+        name='success')
 ]

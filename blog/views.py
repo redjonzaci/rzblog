@@ -1,12 +1,14 @@
+from diyblog import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .forms import CreateForm
-from .models import Post, Comment, Blogger
+from .forms import CreateForm, ReportForm
+from .models import Blogger, Comment, Post, Report
 
 
 def index(request):
@@ -26,7 +28,7 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 
-def LikeView(request, pk):
+def like(request, pk):
     post = get_object_or_404(Post, id=request.POST.get('post_id'))
     post.likes.add(request.user)
     return HttpResponseRedirect(reverse('post-detail', args=[str(pk)]))
@@ -166,3 +168,27 @@ class CommentDelete(LoginRequiredMixin, DeleteView):
     model = Comment
     template_name = "blog/delete_comment.html"
     success_url = reverse_lazy('posts')
+
+
+class ReportCreate(LoginRequiredMixin, CreateView):
+    """Form for reporting a blog post. Requires login."""
+    model = Report
+    form_class = ReportForm
+    template_name = "blog/report.html"
+
+    def form_valid(self, form):
+        report = form.save(commit=False)
+        report.author = self.request.user
+        report.post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        send_mail(report.subject, report.description,
+                  settings.EMAIL_HOST_USER, ['redi.z1908@gmail.com'],
+                  fail_silently=False)
+        report.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('success')
+
+
+def success(request):
+    return render(request, 'blog/success.html')
