@@ -62,6 +62,10 @@ class Comment(models.Model):
     class Meta:
         ordering = ['post_date']
 
+    def get_absolute_url(self):
+        """Returns the url to access a particular blog post."""
+        return reverse('post-detail', args=[str(self.post.id)])
+
     def __str__(self):
         """String for representing the Model object."""
         len_title = 50

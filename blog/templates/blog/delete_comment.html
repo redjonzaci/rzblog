@@ -1,0 +1,10 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Delete Comment: </h1>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <button class="btn btn-secondary">Delete</button>
+  </form>
+{% endblock %}

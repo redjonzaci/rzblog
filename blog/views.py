@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from .forms import CreateForm
 from .models import Post, Comment, Blogger
@@ -56,7 +56,9 @@ class BloggerListView(generic.ListView):
 
 
 class PostListByAuthorView(generic.ListView):
-    """Generic class-based view for a list of blog posts by a particular blogger."""
+    """
+    Generic class-based view for a list of blog posts by a particular blogger.
+    """
     model = Post
     paginate_by = 5
     template_name = 'blog/blog_list_by_author.html'
@@ -138,8 +140,29 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
     template_name = "blog/edit_post.html"
     fields = ['title', 'description', ]
 
+
 class PostDelete(LoginRequiredMixin, DeleteView):
     """Form for deleting a blog post. Requires login of post author. """
     model = Post
     template_name = "blog/delete_post.html"
+    success_url = reverse_lazy('posts')
+
+
+class CommentUpdate(LoginRequiredMixin, UpdateView):
+    """
+    Form for editing a blog post comment.
+    Requires login of comment author.
+    """
+    model = Comment
+    template_name = "blog/edit_comment.html"
+    fields = ['description', ]
+
+
+class CommentDelete(LoginRequiredMixin, DeleteView):
+    """
+    Form for deleting a blog post comment.
+    Requires login of comment author.
+    """
+    model = Comment
+    template_name = "blog/delete_comment.html"
     success_url = reverse_lazy('posts')

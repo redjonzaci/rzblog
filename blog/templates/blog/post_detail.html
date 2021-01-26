@@ -34,8 +34,13 @@
         associated with a particular Blog-->
     {% for comment in post.comment_set.all %}
       <hr>
-      <p>{{comment.author}} ({{comment.post_date}}) - {{comment.description}}</p>
-      {% endfor %}
+      <p>{{comment.author}} ({{comment.post_date}}) - {{comment.description}}
+      {% if user.is_authenticated and user.username == comment.author.username %}
+      — <small>(<a href="{% url 'edit_comment' comment.pk %}">Edit</a>)</small>
+      — <small>(<a href="{% url 'delete_comment' comment.pk %}">Delete</a>)</small>
+      {% endif %}
+      </p>
+    {% endfor %}
       <hr>
       {% if user.is_authenticated %}
         <a href="{% url 'comment' post.id %}">Add a new comment</a></p>
