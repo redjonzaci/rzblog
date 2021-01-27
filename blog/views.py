@@ -63,7 +63,7 @@ class PostListByAuthorView(generic.ListView):
     """
     model = Post
     paginate_by = 5
-    template_name = 'blog/blog_list_by_author.html'
+    template_name = 'blog/post_list_by_author.html'
 
     def get_queryset(self):
         """
@@ -134,6 +134,13 @@ class PostCreate(LoginRequiredMixin, CreateView):
         After posting the blog post return to the list of blogs.
         """
         return reverse('posts')
+
+
+class BloggerUpdate(LoginRequiredMixin, UpdateView):
+    """Form for adding a bio to the blogger when registered. """
+    model = Blogger
+    template_name = 'blog/add_blogger_bio.html'
+    fields = ['bio']
 
 
 class PostUpdate(LoginRequiredMixin, UpdateView):

@@ -1,12 +1,14 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 
 
 class Blogger(models.Model):
     """Model representing a blog post author."""
-    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     bio = models.TextField(
         max_length=400,
         help_text="Enter your bio details here.")
@@ -14,9 +16,18 @@ class Blogger(models.Model):
     class Meta:
         ordering = ['user', 'bio']
 
+    @receiver(post_save, sender=User)
+    def create_blogger(sender, instance, created, **kwargs):
+        if created:
+            Blogger.objects.create(user=instance)
+
+    @receiver(post_save, sender=User)
+    def save_blogger(sender, instance, **kwargs):
+        instance.blogger.save()
+
     def get_absolute_url(self):
         """Returns the url to access a particular blogger."""
-        return reverse('blogs-by-author', args=[str(self.id)])
+        return reverse('posts-by-author', args=[str(self.id)])
 
     def __str__(self):
         """String for representing the Model object."""

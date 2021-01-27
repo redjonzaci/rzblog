@@ -58,5 +58,9 @@ urlpatterns = [
     path(
         'report/success/',
         views.success,
-        name='success')
+        name='success'),
+    path(
+        'blogger/<int:pk>/bio/',
+        views.BloggerUpdate.as_view(),
+        name='blogger_bio')
 ]

@@ -3,13 +3,18 @@
 {% block content %}
   <h1>Blogger: {{blogger}}</h1>
   
-  <h3>Bio</h3>
+  <h3>Bio</h3> 
+  <small>
+    <a href="{% url 'blogger_bio' blogger.pk %}">
+      Update your bio?
+    </a>
+  </small>
   <p>{{blogger.bio}}</p>
 
   {% if post_list %}
-  <h3>Blogs list</h3>
+  <h3>Posts</h3>
   <ul>
-    {% for blog in blog_list %}
+    {% for post in post_list %}
     <li>
       <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> 
       ({{post.post_date}})
