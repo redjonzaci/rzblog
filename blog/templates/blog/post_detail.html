@@ -23,10 +23,15 @@
   <hr>
   <form action="{% url 'like_post' post.pk %}" method="post">
     {% csrf_token %}
+    {% if user.is_authenticated %}
     <button type="submit", name="post_id",
       value="{{ post.id }}", class="btn btn-primary btn-sm">Like</button>
+    {% else %}
+      <p><a href="{% url 'login'%}?next={{request.path}}">Login</a> to like this post</p>
+    {% endif %}
       — {{ total_likes }} like(s)
   </form>
+  
 
   <div style="margin-left:20px;margin-top:20px">
     <h4>Comments</h4>
@@ -53,7 +58,11 @@
   <hr>
   <form action="{% url 'report_post' post.pk %}" method="post">
     {% csrf_token %}
+    {% if user.is_authenticated %}
     <button type="submit", name="report_id",
       value="{{ post.id }}", class="btn btn-primary btn-sm">Report</button>
+    {% else %}
+      <p><a href="{% url 'login'%}?next={{request.path}}">Login</a> to report this post</p>
+    {% endif %}
   </form>
 {% endblock %}
