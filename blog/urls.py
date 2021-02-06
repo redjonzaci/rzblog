@@ -33,7 +33,7 @@ urlpatterns = [
         name='add_post'),
     path(
         'like/<int:pk>',
-        views.like,
+        views.like_post,
         name='like_post'),
     path(
         'edit/<int:pk>',
@@ -62,5 +62,9 @@ urlpatterns = [
     path(
         'blogger/<int:pk>/bio/',
         views.BloggerUpdate.as_view(),
-        name='blogger_bio')
+        name='blogger_bio'),
+    path(
+        'comment/like/<int:pk>',
+        views.like_comment,
+        name='like_comment')
 ]

@@ -49,9 +49,6 @@ class Post(models.Model):
     def total_likes(self):
         return self.likes.count()
 
-    class Meta:
-        ordering = ['-post_date']
-
     def get_absolute_url(self):
         """Returns the url to access a particular blog post."""
         return reverse('post-detail', args=[str(self.id)])
@@ -69,9 +66,14 @@ class Comment(models.Model):
     post_date = models.DateTimeField(default=timezone.localtime)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True)
+    likes = models.ManyToManyField(User, related_name='comment_likes')
+    liked = models.BooleanField(null=True)
 
     class Meta:
         ordering = ['post_date']
+
+    def total_likes(self):
+        return self.likes.count()
 
     def get_absolute_url(self):
         """Returns the url to access a particular blog post."""

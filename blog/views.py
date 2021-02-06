@@ -2,13 +2,14 @@ from diyblog import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, render_to_response
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import CreateForm, ReportForm
 from .models import Blogger, Comment, Post, Report
+from django.db.models import Count
 
 
 def index(request):
@@ -28,9 +29,15 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 
-def like(request, pk):
+def like_post(request, pk):
     post = get_object_or_404(Post, id=request.POST.get('post_id'))
-    post.likes.add(request.user)
+    liked = False
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
     return HttpResponseRedirect(reverse('post-detail', args=[str(pk)]))
 
 
@@ -38,6 +45,10 @@ class PostListView(generic.ListView):
     """Generic class-based view for a list of all blog posts."""
     model = Post
     paginate_by = 5
+
+    def get_context_data(self, *args, **kwargs):
+        context = {'post_list': Post.objects.annotate(like_count=Count('likes')).order_by('-like_count')}
+        return context
 
 
 class PostDetailView(generic.DetailView):
@@ -48,7 +59,17 @@ class PostDetailView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         current_post = get_object_or_404(Post, id=self.kwargs['pk'])
         total_likes = current_post.total_likes()
+        liked = False
+        if current_post.likes.filter(id=self.request.user.id).exists():
+            liked = True
         context['total_likes'] = total_likes
+        context['liked'] = liked
+        for comment in current_post.comment_set.all():
+            comment.liked = False
+            if comment.likes.filter(id=self.request.user.id).exists():
+                comment.liked = True
+            comment.save()
+            context['comment.liked'] = comment.liked
         return context
 
 
@@ -115,6 +136,15 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         After posting comment return to associated blog.
         """
         return reverse('post-detail', kwargs={'pk': self.kwargs['pk'], })
+
+
+def like_comment(request, pk):
+    comment = get_object_or_404(Comment, id=request.POST.get('comment_id'))
+    if comment.likes.filter(id=request.user.id).exists():
+        comment.likes.remove(request.user)
+    else:
+        comment.likes.add(request.user)
+    return HttpResponseRedirect(reverse('post-detail', args=[str(pk)]))
 
 
 class PostCreate(LoginRequiredMixin, CreateView):
