@@ -3,12 +3,14 @@
 {% block content %}
   <h1>Blogger: {{blogger}}</h1>
   
-  <h3>Bio</h3> 
+  <h3>Bio</h3>
+  {% if user.is_authenticated and user.username == blogger.user.username %}
   <small>
     <a href="{% url 'blogger_bio' blogger.pk %}">
       Update your bio?
     </a>
   </small>
+  {% endif %}
   <p>{{blogger.bio}}</p>
 
   {% if post_list %}
