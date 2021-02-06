@@ -1,12 +1,10 @@
-{% extends "base_generic.html" %}
-
-{% block content %}
-  <h1>Personal Blog Home</h1>
-  <p>Welcome to <strong>Redjon Zaci's</strong> personal blog site!</p>
-  <p>This blog site has the following stats:</p>
-  <ul>
-    <li><strong>Bloggers:</strong> {{ num_bloggers }}</li>
-    <li><strong>Blog posts:</strong> {{ num_posts }}</li>
-    <li><strong>Total comments:</strong> {{ total_comments }}</li>
-  </ul>
+{% extends "base_generic.html" %} {% block content %}
+<h1>Personal Blog Home</h1>
+<p>Welcome to <strong>Redjon Zaci's</strong> personal blog site!</p>
+<p>This blog site has the following stats:</p>
+<ul>
+  <li><strong>Bloggers:</strong> {{ num_bloggers }}</li>
+  <li><strong>Blog posts:</strong> {{ num_posts }}</li>
+  <li><strong>Total comments:</strong> {{ total_comments }}</li>
+</ul>
 {% endblock %}

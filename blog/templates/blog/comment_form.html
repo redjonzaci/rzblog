@@ -1,14 +1,14 @@
-{% extends "base_generic.html" %}
+{% extends "base_generic.html" %} {% block content %}
+<p>
+  Post your comment for:
+  <a href="{% url 'post-detail' post.pk %}">{{post.title}}</a>
+</p>
 
-{% block content %}
-  <p>Post your comment for:
-    <a href="{% url 'post-detail' post.pk %}">{{post.title}}</a></p>
-
-  <form action="" method="post">
+<form action="" method="post">
   {% csrf_token %}
   <table>
-  {{ form.as_table }}
+    {{ form.as_table }}
   </table>
   <input type="submit" value="Submit" />
-  </form>
+</form>
 {% endblock %}

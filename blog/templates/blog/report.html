@@ -1,6 +1,4 @@
-{% extends "base_generic.html" %}
-
-{% block content %}
+{% extends "base_generic.html" %} {% block content %}
 <h1>Report Blog Post: {{ post.author }}</h1>
 <form method="post">
   {% csrf_token %}

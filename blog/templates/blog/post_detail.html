@@ -1,88 +1,118 @@
-{% extends "base_generic.html" %}
+{% extends "base_generic.html" %} {% block content %}
+<h1>{{ post.title }}</h1>
+{% if user.is_authenticated and user.username == post.author.user.username %} 
+— <small>(<a href="{% url 'edit_post' post.pk %}">Edit</a>)</small> 
+— <small>(<a href="{% url 'delete_post' post.pk %}">Delete</a>)</small>
+{% endif %}
+<br />
+{% if post.header_image %}
+<img src="{{ post.header_image.url }}" />
+{% endif %}
+<p><strong>Post date</strong> {{ post.post_date }}</p>
+<p>
+  <strong>Author:</strong>
+  <a href="{% url 'posts-by-author' post.author.pk %}">{{ post.author }}</a>
+</p>
+<p>
+  <strong>Description:</strong>
+</p>
+<p style="white-space: pre-wrap">{{ post.description }}</p>
 
-{% block content %}
-  <h1>{{ post.title }}</h1>
-  {% if user.is_authenticated and user.username == post.author.user.username %}
-    — <small>(<a href="{% url 'edit_post' post.pk %}">Edit</a>)</small>
-    — <small>(<a href="{% url 'delete_post' post.pk %}">Delete</a>)</small>
-  {% endif %}
-  <br>
-  {% if post.header_image %}
-    <img src="{{ post.header_image.url }}">
-  {% endif %}
+<hr />
+<form action="{% url 'like_post' post.pk %}" method="post">
+  {% csrf_token %} {% if user.is_authenticated %} {% if liked %}
+  <button
+    type="submit",
+    name="post_id",
+    value="{{ post.id }}",
+    class="btn btn-danger btn-sm"
+  >
+    Unlike
+  </button>
+  {% else %}
+  <button
+    type="submit",
+    name="post_id",
+    value="{{ post.id }}",
+    class="btn btn-primary btn-sm"
+  >
+    Like
+  </button>
+  {% endif %} {% else %}
   <p>
-    <strong>Post date</strong> {{ post.post_date }}
+    <a href="{% url 'login'%}?next={{request.path}}">Login</a> to like this post
   </p>
-  <p>
-    <strong>Author:</strong>
-    <a href="{% url 'posts-by-author' post.author.pk %}">{{ post.author }}</a>
-  </p>
-  <p><strong>Description:</strong></p>
-  <p style="white-space:pre-wrap;">{{ post.description }}</p>
+  {% endif %} — {{ total_likes }} like(s)
+</form>
 
-  <hr>
-  <form action="{% url 'like_post' post.pk %}" method="post">
-    {% csrf_token %}
-    {% if user.is_authenticated %}
-      {% if liked %}
-        <button type="submit", name="post_id",
-        value="{{ post.id }}", class="btn btn-danger btn-sm">Unlike</button>
-      {% else %}
-        <button type="submit", name="post_id",
-        value="{{ post.id }}", class="btn btn-primary btn-sm">Like</button>
-      {% endif %}
-    {% else %}
-      <p><a href="{% url 'login'%}?next={{request.path}}">Login</a> to like this post</p>
-    {% endif %}
-      — {{ total_likes }} like(s)
-  </form>
-  
-
-  <div style="margin-left:20px;margin-top:20px">
-    <h4>Comments</h4>
-    <!--comment_set.all function returns all Comment records
+<div style="margin-left: 20px; margin-top: 20px">
+  <h4>Comments</h4>
+  <!--comment_set.all function returns all Comment records
         associated with a particular Post-->
-    {% for comment in post.comment_set.all %}
-      <hr>
-      <p>{{comment.author}} ({{comment.post_date}}) - {{comment.description}}
-      {% if user.is_authenticated and user.username == comment.author.username %}
-      — <small>(<a href="{% url 'edit_comment' comment.pk %}">Edit</a>)</small>
-      — <small>(<a href="{% url 'delete_comment' comment.pk %}">Delete</a>)</small>
-      <form action="{% url 'like_comment' post.pk %}" method="post">
-        {% csrf_token %}
-        {% if user.is_authenticated %}
-          {% if comment.liked %}
-            <button type="submit", name="comment_id",
-            value="{{ comment.id }}", class="btn btn-danger btn-sm">Unlike</button>
-          {% else %}
-            <button type="submit", name="comment_id",
-            value="{{ comment.id }}", class="btn btn-primary btn-sm">Like</button>
-          {% endif %}
-        {% else %}
-          <p><a href="{% url 'login'%}?next={{request.path}}">Login</a> to like this post</p>
-        {% endif %}
-          — {{ comment.total_likes }} like(s)
-      </form>
-      {% endif %}
-      </p>
-    {% endfor %}
-      <hr>
-      {% if user.is_authenticated %}
-        <a href="{% url 'comment' post.id %}">Add a new comment</a></p>
-      {% else %}
-        <p><a href="{% url 'login'%}?next={{request.path}}">Login</a>
-          to add a new comment</p>
-    {% endif %}
-  </div>
-
-  <hr>
-  <form action="{% url 'report_post' post.pk %}" method="post">
-    {% csrf_token %}
-    {% if user.is_authenticated %}
-    <button type="submit", name="report_id",
-      value="{{ post.id }}", class="btn btn-primary btn-sm">Report</button>
+  {% for comment in post.comment_set.all %}
+  <hr />
+  <p>
+    {{comment.author}} ({{comment.post_date}}) - {{comment.description}} {% if
+    user.is_authenticated and user.username == comment.author.username %} —
+    <small> (<a href="{% url 'edit_comment' comment.pk %}">Edit</a>) </small> —
+    <small>
+      (<a href="{% url 'delete_comment' comment.pk %}">Delete</a>)
+    </small>
+  </p>
+  <form action="{% url 'like_comment' post.pk %}" method="post">
+    {% csrf_token %} {% if user.is_authenticated %} {% if comment.liked %}
+    <button
+      type="submit",
+      name="comment_id",
+      value="{{ comment.id }}",
+      class="btn btn-danger btn-sm"
+    >
+      Unlike
+    </button>
     {% else %}
-      <p><a href="{% url 'login'%}?next={{request.path}}">Login</a> to report this post</p>
-    {% endif %}
+    <button
+      type="submit",
+      name="comment_id",
+      value="{{ comment.id }}",
+      class="btn btn-primary btn-sm"
+    >
+      Like
+    </button>
+    {% endif %} {% else %}
+    <p>
+      <a href="{% url 'login'%}?next={{request.path}}">Login</a> to like this
+      post
+    </p>
+    {% endif %} — {{ comment.total_likes }} like(s)
   </form>
+  {% endif %} {% endfor %}
+  <hr />
+  {% if user.is_authenticated %}
+  <a href="{% url 'comment' post.id %}">Add a new comment</a>
+  {% else %}
+  <p>
+    <a href="{% url 'login'%}?next={{request.path}}">Login</a>
+    to add a new comment
+  </p>
+  {% endif %}
+</div>
+
+<hr />
+<form action="{% url 'report_post' post.pk %}" method="post">
+  {% csrf_token %} {% if user.is_authenticated %}
+  <button
+    type="submit",
+    name="report_id",
+    value="{{ post.id }}",
+    class="btn btn-primary btn-sm"
+  >
+    Report
+  </button>
+  {% else %}
+  <p>
+    <a href="{% url 'login'%}?next={{request.path}}">Login</a> to report this
+    post
+  </p>
+  {% endif %}
+</form>
 {% endblock %}

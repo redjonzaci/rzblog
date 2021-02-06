@@ -1,27 +1,24 @@
-{% extends "base_generic.html" %}
+{% extends "base_generic.html" %} {% block content %}
+<h1>Category: {{category}}</h1>
 
-{% block content %}
-  <h1>Category: {{category}}</h1>
+{% if post_list %}
+<h3>Posts</h3>
+<ul>
+  {% for post in post_list %}
+  <li>
+    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+    ({{post.post_date}}) {{ post.total_likes }} like(s)
+  </li>
+  {% endfor %}
+</ul>
 
-  {% if post_list %}
-  <h3>Posts</h3>
-  <ul>
-    {% for post in post_list %}
-    <li>
-      <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> 
-      ({{post.post_date}})
-      {{ post.total_likes }} like(s)
-    </li>
-    {% endfor %}
-  </ul>
-
-  {% else %}
-    <p>This category doesn't have any post yet.</p>
-  {% endif %}  
-  {% if user.is_authenticated %}
-    <a href="{% url 'add_post' %}">Add a new blog post</a></p>
-  {% else %}
-    <p><a href="{% url 'login'%}?next={{request.path}}">Login</a> 
-      to add a new blog post</p>
-  {% endif %}     
-{% endblock %}
+{% else %}
+<p>This category doesn't have any post yet.</p>
+{% endif %} {% if user.is_authenticated %}
+<a href="{% url 'add_post' %}">Add a new blog post</a>
+{% else %}
+<p>
+  <a href="{% url 'login'%}?next={{request.path}}">Login</a> to add a new blog
+  post
+</p>
+{% endif %} {% endblock %}
