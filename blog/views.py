@@ -1,15 +1,15 @@
 from diyblog import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
+from django.db.models import Count
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render, render_to_response
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import CreateForm, ReportForm
 from .models import Blogger, Category, Comment, Post, Report
-from django.db.models import Count
 
 
 def index(request):
@@ -31,13 +31,10 @@ def index(request):
 
 def like_post(request, pk):
     post = get_object_or_404(Post, id=request.POST.get('post_id'))
-    liked = False
     if post.likes.filter(id=request.user.id).exists():
         post.likes.remove(request.user)
-        liked = False
     else:
         post.likes.add(request.user)
-        liked = True
     return HttpResponseRedirect(reverse('post-detail', args=[str(pk)]))
 
 
@@ -47,7 +44,8 @@ class PostListView(generic.ListView):
     paginate_by = 5
 
     def get_context_data(self, *args, **kwargs):
-        context = {'post_list': Post.objects.annotate(like_count=Count('likes')).order_by('-like_count')}
+        context = {'post_list': Post.objects.annotate(
+            like_count=Count('likes')).order_by('-like_count')}
         return context
 
 
@@ -177,7 +175,7 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
     """Form for editing a blog post. Requires login of post author. """
     model = Post
     template_name = "blog/edit_post.html"
-    fields = ['title', 'description', ]
+    fields = ['title', 'description', 'category']
 
 
 class PostDelete(LoginRequiredMixin, DeleteView):
@@ -241,23 +239,37 @@ class PostListByCategoryView(generic.ListView):
     Generic class-based view for a list of blog posts in a particular category.
     """
     model = Post
-    paginate_by = 5
     template_name = 'blog/post_list_by_category.html'
 
-    def get_queryset(self):
-        """
-        Return list of Blog objects which have Category (category id specified in URL)
-        """
-        id = self.kwargs['pk']
-        target_category = get_object_or_404(Category, pk=id)
-        return Post.objects.filter(category=target_category)
-
     def get_context_data(self, **kwargs):
-        """Add Blogger to context so they can be displayed in the template"""
+        """Add Category to context so they can be displayed in the template"""
         # Call the base implementation first to get a context
-        context = super(PostListByCategoryView, self).get_context_data(**kwargs)
-        # Get the blogger object from the "pk" URL parameter and add it to the
+        context = super(
+            PostListByCategoryView,
+            self).get_context_data(
+            **kwargs)
+        # Get the category object from the "pk" URL parameter and add it to the
         # context
         context['category'] = get_object_or_404(Category, pk=self.kwargs['pk'])
-        context = {'post_list': Post.objects.annotate(like_count=Count('likes')).order_by('-like_count')}
+        id = self.kwargs['pk']
+        target_category = get_object_or_404(Category, pk=id)
+        context['post_list'] = Post.objects.filter(category=target_category)
         return context
+
+
+class CategoryCreate(LoginRequiredMixin, CreateView):
+    """Form for adding a category. Requires login. """
+    model = Category
+    template_name = "blog/add_category.html"
+    fields = ['name']
+
+    def form_valid(self, form):
+        category = form.save(commit=False)
+        category.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        """
+        After posting the category return to the list of categories.
+        """
+        return reverse('categories')

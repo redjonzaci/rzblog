@@ -75,4 +75,8 @@ urlpatterns = [
         'category/<int:pk>',
         views.PostListByCategoryView.as_view(),
         name='posts-by-category'),
+    path(
+        'add_category/',
+        views.CategoryCreate.as_view(),
+        name='add_category')
 ]
