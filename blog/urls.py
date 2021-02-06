@@ -66,5 +66,13 @@ urlpatterns = [
     path(
         'comment/like/<int:pk>',
         views.like_comment,
-        name='like_comment')
+        name='like_comment'),
+    path(
+        'categories/',
+        views.CategoryListView.as_view(),
+        name='categories'),
+    path(
+        'category/<int:pk>',
+        views.PostListByCategoryView.as_view(),
+        name='posts-by-category'),
 ]

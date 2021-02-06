@@ -7,7 +7,7 @@ class CreateForm(forms.ModelForm):
     class Meta:
         model = models.Post
         exclude = ['author']
-        fields = ['title', 'description', 'header_image']
+        fields = ['title', 'description', 'header_image', 'category']
 
 
 class ReportForm(forms.ModelForm):

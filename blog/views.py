@@ -8,7 +8,7 @@ from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import CreateForm, ReportForm
-from .models import Blogger, Comment, Post, Report
+from .models import Blogger, Category, Comment, Post, Report
 from django.db.models import Count
 
 
@@ -229,3 +229,35 @@ class ReportCreate(LoginRequiredMixin, CreateView):
 
 def success(request):
     return render(request, 'blog/success.html')
+
+
+class CategoryListView(generic.ListView):
+    """Generic class-based view for a list of all categories."""
+    model = Category
+
+
+class PostListByCategoryView(generic.ListView):
+    """
+    Generic class-based view for a list of blog posts in a particular category.
+    """
+    model = Post
+    paginate_by = 5
+    template_name = 'blog/post_list_by_category.html'
+
+    def get_queryset(self):
+        """
+        Return list of Blog objects which have Category (category id specified in URL)
+        """
+        id = self.kwargs['pk']
+        target_category = get_object_or_404(Category, pk=id)
+        return Post.objects.filter(category=target_category)
+
+    def get_context_data(self, **kwargs):
+        """Add Blogger to context so they can be displayed in the template"""
+        # Call the base implementation first to get a context
+        context = super(PostListByCategoryView, self).get_context_data(**kwargs)
+        # Get the blogger object from the "pk" URL parameter and add it to the
+        # context
+        context['category'] = get_object_or_404(Category, pk=self.kwargs['pk'])
+        context = {'post_list': Post.objects.annotate(like_count=Count('likes')).order_by('-like_count')}
+        return context

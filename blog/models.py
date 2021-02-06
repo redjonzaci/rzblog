@@ -34,6 +34,19 @@ class Blogger(models.Model):
         return self.user.username
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=200)
+
+    class Meta:
+        verbose_name_plural = 'Categories'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('index')
+
+
 class Post(models.Model):
     """Model representing a blog post."""
     title = models.CharField(max_length=200)
@@ -44,7 +57,8 @@ class Post(models.Model):
         max_length=2000,
         help_text="Enter your post text here.")
     post_date = models.DateTimeField(default=timezone.localtime)
-    likes = models.ManyToManyField(User, related_name='post_likes')
+    likes = models.ManyToManyField(User, related_name='post_likes', blank=True)
+    category = models.ManyToManyField(Category)
 
     def total_likes(self):
         return self.likes.count()
