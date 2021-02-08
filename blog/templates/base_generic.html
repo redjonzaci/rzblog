@@ -14,7 +14,18 @@
     />
     <!-- Add additional CSS in static file -->
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/dark.css' %}" />
+
+    <script type="text/javascript">
+      function toggleTheme() {
+        var theme = document.getElementsByTagName('link')[1]; 
+        if (theme.getAttribute('href') == '/static/css/light.css') { 
+            theme.setAttribute('href', '/static/css/dark.css'); 
+        } else { 
+            theme.setAttribute('href', '/static/css/light.css'); 
+        }
+      }
+    </script>
   </head>
   <body>
     <div class="container-fluid">
@@ -68,5 +79,6 @@
         </div>
       </div>
     </div>
+    <button class="btn btn-success btn-sm" onclick="toggleTheme()">Switch Theme</button>
   </body>
 </html>
