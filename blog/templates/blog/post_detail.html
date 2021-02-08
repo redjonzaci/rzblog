@@ -52,40 +52,42 @@
   {% for comment in post.comment_set.all %}
   <hr />
   <p>
-    {{comment.author}} ({{comment.post_date}}) - {{comment.description}} {% if
-    user.is_authenticated and user.username == comment.author.username %} —
-    <small> (<a href="{% url 'edit_comment' comment.pk %}">Edit</a>) </small> —
-    <small>
-      (<a href="{% url 'delete_comment' comment.pk %}">Delete</a>)
-    </small>
+    {{comment.author}} ({{comment.post_date}}) - {{comment.description}} 
+    {% if user.is_authenticated and user.username == comment.author.username %} 
+    — <small> (<a href="{% url 'edit_comment' comment.pk %}">Edit</a>) </small> 
+    — <small> (<a href="{% url 'delete_comment' comment.pk %}">Delete</a>) </small>
+    {% endif %}
   </p>
   <form action="{% url 'like_comment' post.pk %}" method="post">
-    {% csrf_token %} {% if user.is_authenticated %} {% if comment.liked %}
-    <button
-      type="submit",
-      name="comment_id",
-      value="{{ comment.id }}",
-      class="btn btn-danger btn-sm"
-    >
-      Unlike
-    </button>
+    {% csrf_token %} 
+    {% if user.is_authenticated %} 
+      {% if comment.liked %}
+      <button
+        type="submit",
+        name="comment_id",
+        value="{{ comment.id }}",
+        class="btn btn-danger btn-sm"
+      >
+        Unlike
+      </button>
+      {% else %}
+      <button
+        type="submit",
+        name="comment_id",
+        value="{{ comment.id }}",
+        class="btn btn-primary btn-sm"
+      >
+        Like
+      </button>
+      {% endif %} 
     {% else %}
-    <button
-      type="submit",
-      name="comment_id",
-      value="{{ comment.id }}",
-      class="btn btn-primary btn-sm"
-    >
-      Like
-    </button>
-    {% endif %} {% else %}
     <p>
       <a href="{% url 'login'%}?next={{request.path}}">Login</a> to like this
       post
     </p>
     {% endif %} — {{ comment.total_likes }} like(s)
   </form>
-  {% endif %} {% endfor %}
+  {% endfor %}
   <hr />
   {% if user.is_authenticated %}
   <a href="{% url 'comment' post.id %}">Add a new comment</a>
