@@ -1,6 +1,7 @@
-{% extends "base_generic.html" %} {% block content %}
-<h1>Add Blog Post:</h1>
+{% extends "base_generic.html" %}
 
+{% block content %}
+<h1>Add Post:</h1>
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   <table>
@@ -10,8 +11,7 @@
   <a href="{% url 'add_category' %}">Add a new category</a>
   {% else %}
   <p>
-    <a href="{% url 'login'%}?next={{request.path}}">Login</a> to add a new
-    category
+    <a href="{% url 'login' %}?next={{ request.path }}">Login</a> to add a new category
   </p>
   {% endif %}
   <input type="submit" value="Submit" />

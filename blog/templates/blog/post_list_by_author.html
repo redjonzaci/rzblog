@@ -1,5 +1,7 @@
-{% extends "base_generic.html" %} {% block content %}
-<h1>Blogger: {{blogger}}</h1>
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Blogger: {{ blogger }}</h1>
 
 <h3>Bio</h3>
 {% if user.is_authenticated and user.username == blogger.user.username %}
@@ -15,11 +17,13 @@
   {% for post in post_list %}
   <li>
     <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-    ({{post.post_date}}) {{ post.total_likes }} like(s)
+    ({{ post.post_date }}) — {{ post.total_likes }}
+    like{% if post.total_likes > 1 %}s{% endif %}
   </li>
   {% endfor %}
 </ul>
 
 {% else %}
 <p>This blogger hasn't posted anything yet.</p>
-{% endif %} {% endblock %}
+{% endif %} 
+{% endblock %}

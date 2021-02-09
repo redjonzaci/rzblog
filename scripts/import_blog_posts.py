@@ -1,7 +1,8 @@
 import csv
 
-from blog.models import Blog, Blogger
 from django.contrib.auth.models import User
+
+from diyblog.blog.models import Blog, Blogger
 
 
 def run():

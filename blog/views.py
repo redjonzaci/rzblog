@@ -25,19 +25,10 @@ def index(request):
         'total_comments': total_comments,
     }
 
-    # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
 
-def like_post(request, pk):
-    post = get_object_or_404(Post, id=request.POST.get('post_id'))
-    if post.likes.filter(id=request.user.id).exists():
-        post.likes.remove(request.user)
-    else:
-        post.likes.add(request.user)
-    return HttpResponseRedirect(reverse('post-detail', args=[str(pk)]))
-
-
+# Post SECTION
 class PostListView(generic.ListView):
     """Generic class-based view for a list of all blog posts."""
     model = Post
@@ -71,6 +62,64 @@ class PostDetailView(generic.DetailView):
         return context
 
 
+class PostCreate(LoginRequiredMixin, CreateView):
+    """Form for adding a blog post. Requires login. """
+    model = Post
+    form_class = CreateForm
+    template_name = "blog/add_post.html"
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.author = Blogger.objects.get(user=self.request.user)
+        post.save()
+        return HttpResponseRedirect(reverse('posts'))
+
+
+class PostUpdate(LoginRequiredMixin, UpdateView):
+    """Form for editing a blog post. Requires login of post author. """
+    model = Post
+    template_name = "blog/edit_post.html"
+    fields = ['title', 'header_image', 'description', 'category']
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds associated post to form template
+        so its title can be displayed in HTML.
+        """
+        # Call the base implementation first to get a context
+        context = super(PostUpdate, self).get_context_data(**kwargs)
+        # Get the post from id and add it to the context
+        context['post'] = get_object_or_404(Post, pk=self.kwargs['pk'])
+        return context
+
+
+class PostDelete(LoginRequiredMixin, DeleteView):
+    """Form for deleting a blog post. Requires login of post author. """
+    model = Post
+    template_name = "blog/delete_post.html"
+    success_url = reverse_lazy('posts')
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds associated post to form template
+        so its title can be displayed in HTML.
+        """
+        context = super(PostDelete, self).get_context_data(**kwargs)
+        context['post'] = get_object_or_404(Post, pk=self.kwargs['pk'])
+        return context
+
+
+def like_post(request, pk):
+    """View function to process clicking the like button."""
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+    else:
+        post.likes.add(request.user)
+    return HttpResponseRedirect(reverse('post-detail', args=[str(pk)]))
+
+
+# Blogger SECTION
 class BloggerListView(generic.ListView):
     """Generic class-based view for a list of all bloggers."""
     model = Blogger
@@ -78,7 +127,7 @@ class BloggerListView(generic.ListView):
 
 class PostListByAuthorView(generic.ListView):
     """
-    Generic class-based view for a list of blog posts by a particular blogger.
+    Generic class-based view for a list of posts by a particular blogger.
     """
     model = Post
     paginate_by = 5
@@ -86,40 +135,43 @@ class PostListByAuthorView(generic.ListView):
 
     def get_queryset(self):
         """
-        Return list of Blog objects by Blogger (author id specified in URL)
+        Returns list of Post objects by Blogger (author id specified in URL)
         """
-        id = self.kwargs['pk']
-        target_blogger = get_object_or_404(Blogger, pk=id)
+        target_blogger = get_object_or_404(Blogger, pk=self.kwargs['pk'])
         return Post.objects.filter(author=target_blogger)
 
     def get_context_data(self, **kwargs):
-        """Add Blogger to context so they can be displayed in the template"""
-        # Call the base implementation first to get a context
+        """Adds Blogger to context so they can be displayed in the template"""
         context = super(PostListByAuthorView, self).get_context_data(**kwargs)
-        # Get the blogger object from the "pk" URL parameter and add it to the
-        # context
         context['blogger'] = get_object_or_404(Blogger, pk=self.kwargs['pk'])
         return context
 
 
+class BloggerUpdate(LoginRequiredMixin, UpdateView):
+    """Form for adding a bio to the blogger when registered. """
+    model = Blogger
+    template_name = 'blog/add_blogger_bio.html'
+    fields = ['bio']
+
+
+# Comment SECTION
 class CommentCreate(LoginRequiredMixin, CreateView):
-    """Form for adding a blog comment. Requires login. """
+    """Form for adding a comment. Requires login. """
     model = Comment
-    fields = ['description', ]
+    fields = ['description']
 
     def get_context_data(self, **kwargs):
         """
-        Add associated blog to form template so can display its title in HTML.
+        Adds associated post to form template
+        so we can display its title in HTML.
         """
-        # Call the base implementation first to get a context
         context = super(CommentCreate, self).get_context_data(**kwargs)
-        # Get the blog from id and add it to the context
         context['post'] = get_object_or_404(Post, pk=self.kwargs['pk'])
         return context
 
     def form_valid(self, form):
         """
-        Add author and associated blog to form data
+        Adds author and associated post to form data
         before setting it as valid (so it is saved to model)
         """
         # Add logged-in user as author of comment
@@ -131,12 +183,51 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         """
-        After posting comment return to associated blog.
+        After posting comment returns to associated post.
         """
         return reverse('post-detail', kwargs={'pk': self.kwargs['pk'], })
 
 
+class CommentUpdate(LoginRequiredMixin, UpdateView):
+    """
+    Form for editing a comment.
+    Requires login of comment author.
+    """
+    model = Comment
+    template_name = "blog/edit_comment.html"
+    fields = ['description']
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds associated comment to form template
+        so we can display its title in HTML.
+        """
+        context = super(CommentUpdate, self).get_context_data(**kwargs)
+        context['comment'] = get_object_or_404(Comment, pk=self.kwargs['pk'])
+        return context
+
+
+class CommentDelete(LoginRequiredMixin, DeleteView):
+    """
+    Form for deleting a comment.
+    Requires login of comment author.
+    """
+    model = Comment
+    template_name = "blog/delete_comment.html"
+    success_url = reverse_lazy('posts')
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds associated comment to form template
+        so can display its title in HTML.
+        """
+        context = super(CommentDelete, self).get_context_data(**kwargs)
+        context['comment'] = get_object_or_404(Comment, pk=self.kwargs['pk'])
+        return context
+
+
 def like_comment(request, pk):
+    """View function to process clicking the like button of a comment."""
     comment = get_object_or_404(Comment, id=request.POST.get('comment_id'))
     if comment.likes.filter(id=request.user.id).exists():
         comment.likes.remove(request.user)
@@ -145,71 +236,21 @@ def like_comment(request, pk):
     return HttpResponseRedirect(reverse('post-detail', args=[str(pk)]))
 
 
-class PostCreate(LoginRequiredMixin, CreateView):
-    """Form for adding a blog post. Requires login. """
-    model = Post
-    form_class = CreateForm
-    template_name = "blog/add_post.html"
-
-    def form_valid(self, form):
-        post = form.save(commit=False)
-        post.author = Blogger.objects.get(user=self.request.user)
-        post.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        """
-        After posting the blog post return to the list of blogs.
-        """
-        return reverse('posts')
-
-
-class BloggerUpdate(LoginRequiredMixin, UpdateView):
-    """Form for adding a bio to the blogger when registered. """
-    model = Blogger
-    template_name = 'blog/add_blogger_bio.html'
-    fields = ['bio']
-
-
-class PostUpdate(LoginRequiredMixin, UpdateView):
-    """Form for editing a blog post. Requires login of post author. """
-    model = Post
-    template_name = "blog/edit_post.html"
-    fields = ['title', 'description', 'category']
-
-
-class PostDelete(LoginRequiredMixin, DeleteView):
-    """Form for deleting a blog post. Requires login of post author. """
-    model = Post
-    template_name = "blog/delete_post.html"
-    success_url = reverse_lazy('posts')
-
-
-class CommentUpdate(LoginRequiredMixin, UpdateView):
-    """
-    Form for editing a blog post comment.
-    Requires login of comment author.
-    """
-    model = Comment
-    template_name = "blog/edit_comment.html"
-    fields = ['description', ]
-
-
-class CommentDelete(LoginRequiredMixin, DeleteView):
-    """
-    Form for deleting a blog post comment.
-    Requires login of comment author.
-    """
-    model = Comment
-    template_name = "blog/delete_comment.html"
-    success_url = reverse_lazy('posts')
-
-
+# Report SECTION
 class ReportCreate(LoginRequiredMixin, CreateView):
     """Form for reporting a blog post. Requires login."""
     model = Report
     form_class = ReportForm
     template_name = "blog/report.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds associated post to form template
+        so we can display its title in HTML.
+        """
+        context = super(ReportCreate, self).get_context_data(**kwargs)
+        context['post'] = get_object_or_404(Post, pk=self.kwargs['pk'])
+        return context
 
     def form_valid(self, form):
         report = form.save(commit=False)
@@ -229,6 +270,7 @@ def success(request):
     return render(request, 'blog/success.html')
 
 
+# Category SECTION
 class CategoryListView(generic.ListView):
     """Generic class-based view for a list of all categories."""
     model = Category
@@ -236,24 +278,27 @@ class CategoryListView(generic.ListView):
 
 class PostListByCategoryView(generic.ListView):
     """
-    Generic class-based view for a list of blog posts in a particular category.
+    Generic class-based view for a list of posts of a category.
     """
     model = Post
     template_name = 'blog/post_list_by_category.html'
 
+    def get_queryset(self):
+        """
+        Returns list of Post objects by Category
+        ordered by like count (category id specified in URL)
+        """
+        target_category = get_object_or_404(Category, pk=self.kwargs['pk'])
+        return Post.objects.filter(category=target_category).annotate(
+            like_count=Count('likes')).order_by('-like_count')
+
     def get_context_data(self, **kwargs):
-        """Add Category to context so they can be displayed in the template"""
-        # Call the base implementation first to get a context
+        """Adds category to context so they can be displayed in the template"""
         context = super(
             PostListByCategoryView,
             self).get_context_data(
             **kwargs)
-        # Get the category object from the "pk" URL parameter and add it to the
-        # context
         context['category'] = get_object_or_404(Category, pk=self.kwargs['pk'])
-        id = self.kwargs['pk']
-        target_category = get_object_or_404(Category, pk=id)
-        context['post_list'] = Post.objects.filter(category=target_category)
         return context
 
 
@@ -262,14 +307,4 @@ class CategoryCreate(LoginRequiredMixin, CreateView):
     model = Category
     template_name = "blog/add_category.html"
     fields = ['name']
-
-    def form_valid(self, form):
-        category = form.save(commit=False)
-        category.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        """
-        After posting the category return to the list of categories.
-        """
-        return reverse('categories')
+    success_url = reverse_lazy('categories')
