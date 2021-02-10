@@ -24,6 +24,12 @@
 </ul>
 
 {% else %}
-<p>This blogger hasn't posted anything yet.</p>
-{% endif %} 
+{% if user.is_authenticated and user.username == blogger.user.username %}
+<a href="{% url 'add_post' %}">Add a new post</a>
+{% else %}
+<p>
+  This blogger hasn't posted anything yet.
+</p>
+{% endif %}
+{% endif %}
 {% endblock %}

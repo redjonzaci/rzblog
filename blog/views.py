@@ -1,5 +1,5 @@
-from diyblog import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db.models import Count
 from django.http import HttpResponseRedirect
@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
+from diyblog import settings
 
 from .forms import CreateForm, ReportForm
 from .models import Blogger, Category, Comment, Post, Report
@@ -59,6 +61,7 @@ class PostDetailView(generic.DetailView):
                 comment.liked = True
             comment.save()
             context['comment.liked'] = comment.liked
+        context['categories'] = current_post.get_categories()
         return context
 
 
@@ -72,6 +75,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
         post = form.save(commit=False)
         post.author = Blogger.objects.get(user=self.request.user)
         post.save()
+        form.save_m2m()
         return HttpResponseRedirect(reverse('posts'))
 
 
@@ -138,13 +142,25 @@ class PostListByAuthorView(generic.ListView):
         Returns list of Post objects by Blogger (author id specified in URL)
         """
         target_blogger = get_object_or_404(Blogger, pk=self.kwargs['pk'])
-        return Post.objects.filter(author=target_blogger)
+        return Post.objects.filter(author=target_blogger).annotate(
+            like_count=Count('likes')).order_by('-like_count')
 
     def get_context_data(self, **kwargs):
         """Adds Blogger to context so they can be displayed in the template"""
         context = super(PostListByAuthorView, self).get_context_data(**kwargs)
         context['blogger'] = get_object_or_404(Blogger, pk=self.kwargs['pk'])
         return context
+
+
+class BloggerCreate(CreateView):
+    model = Blogger
+    fields = ['bio']
+
+    def form_valid(self, form):
+        blogger = form.save(commit=False)
+        blogger.user = User.objects.get(username=self.request.user.username)
+        blogger.save()
+        return HttpResponseRedirect(reverse('bloggers'))
 
 
 class BloggerUpdate(LoginRequiredMixin, UpdateView):

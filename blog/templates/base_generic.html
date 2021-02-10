@@ -44,7 +44,7 @@
             <li><a href="{% url 'bloggers' %}">All bloggers</a></li>
             <li><a href="{% url 'categories' %}">Categories</a></li>
             {% if user.is_authenticated %}
-            <li>User: {{ user.get_username }}</li>
+            <li>User: <a href="{% url 'posts-by-author' user.blogger.pk %}">{{ user.get_username }}</a></li>
             <li>
               <a href="{% url 'logout' %}?next={{ request.path }}">Logout</a>
             </li>

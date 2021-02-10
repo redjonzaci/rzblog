@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>{{ post.title }}</h1>
-{% if user.is_authenticated and user.username == post.author.user.username %} 
+{% if user.is_authenticated and user.username == post.author.user.username %}
 — <small>(<a href="{% url 'edit_post' post.pk %}">Edit</a>)</small> 
 — <small>(<a href="{% url 'delete_post' post.pk %}">Delete</a>)</small>
 {% endif %}
@@ -11,6 +11,18 @@
 <img src="{{ post.header_image.url }}" />
 {% endif %}
 <p><strong>Post date</strong> {{ post.post_date }}</p>
+<p><strong>Category: </strong> 
+{% if categories %}
+  {% for category in categories %}
+    {{ category }},
+  {% endfor %}
+  - <small><a href="{% url 'edit_post' post.pk %}"> Change categories </a></small>
+{% else %}
+  {% if user.is_authenticated and user.username == post.author.user.username %}
+  <a href="{% url 'edit_post' post.pk %}"> Add a category </a>
+  {% endif %}
+{% endif %}
+</p>
 <p>
   <strong>Author:</strong>
   <a href="{% url 'posts-by-author' post.author.pk %}">{{ post.author }}</a>
