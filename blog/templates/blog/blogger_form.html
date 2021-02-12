@@ -1,11 +1,13 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+  <h1>Register as blogger</h1>
   <form action="" method="post">
     {% csrf_token %}
     <table>
-    {{ form.as_table }}
+      {{ form.media }}
+      {{ form.as_table }}
     </table>
-    <input type="submit" value="Submit">
+    <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 {% endblock %}

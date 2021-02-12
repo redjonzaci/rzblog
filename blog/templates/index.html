@@ -1,6 +1,14 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+{% if user.is_authenticated and not user.blogger %}
+  <a
+    class="btn btn-warning"
+    href="{% url 'blogger-create' %}"
+  >
+    Register as blogger
+  </a>
+{% endif %}
 <h1>Personal Blog Home</h1>
 <p>Welcome to <strong>Redjon Zaci's</strong> personal blog site!</p>
 <p>This blog site has the following stats:</p>

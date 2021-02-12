@@ -1,6 +1,9 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
 
 from . import views
+from rzblog import settings
 
 urlpatterns = [
     path(
@@ -15,18 +18,6 @@ urlpatterns = [
         'post/<int:pk>',
         views.PostDetailView.as_view(),
         name='post-detail'),
-    path(
-        'bloggers/',
-        views.BloggerListView.as_view(),
-        name='bloggers'),
-    path(
-        'blogger/<int:pk>',
-        views.PostListByAuthorView.as_view(),
-        name='posts-by-author'),
-    path(
-        'post/<int:pk>/comment/',
-        views.CommentCreate.as_view(),
-        name='comment'),
     path(
         'add_post/',
         views.PostCreate.as_view(),
@@ -44,6 +35,22 @@ urlpatterns = [
         views.PostDelete.as_view(),
         name='delete_post'),
     path(
+        'bloggers/',
+        views.BloggerListView.as_view(),
+        name='bloggers'),
+    path(
+        'blogger/<int:pk>',
+        views.PostListByAuthorView.as_view(),
+        name='posts-by-author'),
+    path(
+        'blogger/<int:pk>/profile/',
+        views.BloggerUpdate.as_view(),
+        name='edit_blogger'),
+    path(
+        'post/<int:pk>/comment/',
+        views.CommentCreate.as_view(),
+        name='comment'),
+    path(
         'post/<int:pk>/comment/edit/',
         views.CommentUpdate.as_view(),
         name='edit_comment'),
@@ -60,10 +67,6 @@ urlpatterns = [
         views.success,
         name='success'),
     path(
-        'blogger/<int:pk>/bio/',
-        views.BloggerUpdate.as_view(),
-        name='blogger_bio'),
-    path(
         'comment/like/<int:pk>',
         views.like_comment,
         name='like_comment'),
@@ -79,4 +82,4 @@ urlpatterns = [
         'add_category/',
         views.CategoryCreate.as_view(),
         name='add_category')
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

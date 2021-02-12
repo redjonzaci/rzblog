@@ -2,7 +2,12 @@
 
 {% block content %}
   <h1>Register</h1>
-
+  <p>After registering, please follow the steps below: </p>
+  <ul>
+    <li>Login with the credentials you just used to register.</li>
+    <li>Add your bio as a blogger.</li>
+    <li>Enjoy the blog site!</li>
+  </ul>
   <form method="post">
     {% csrf_token %}
     <table>

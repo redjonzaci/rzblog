@@ -1,15 +1,40 @@
 {% extends "base_generic.html" %}
+{% load static %}
 
 {% block content %}
-<h1>Blogger: {{ blogger }}</h1>
-
-<h3>Bio</h3>
-{% if user.is_authenticated and user.username == blogger.user.username %}
-<small>
-  <a href="{% url 'blogger_bio' blogger.pk %}"> Update your bio? </a>
-</small>
+<h1>{{ blogger }}</h1>
+{% if blogger.profile_pic %}
+  <img
+    src="{{ blogger.profile_pic.url }}"
+    alt="Profile Picture"
+    width="20%"
+    class="rounded-circle"
+  >
+{% else %}
+  <img
+    src="{% static 'images/default_profile_pic.jpg' %}"
+    alt="Default Profile Picture"
+    width="20%"
+    class="rounded-circle"
+  >
 {% endif %}
-<p>{{blogger.bio}}</p>
+<br>
+<h3>Bio</h3>
+<p>{{ blogger.bio|safe }}</p>
+<p class="small text-muted">
+  {% if blogger.website_url %}
+    <a href="{{ blogger.website_url }}">Website</a> |
+  {% endif %}
+  {% if blogger.linkedin_url %}
+    <a href="{{ blogger.linkedin_url }}">LinkedIn</a> |
+  {% endif %}
+  {% if blogger.twitter_url %}
+    <a href="{{ blogger.twitter_url }}">Twitter</a> |
+  {% endif %}
+  {% if blogger.facebook_url %}
+    <a href="{{ blogger.facebook_url }}">Facebook</a>
+  {% endif %}
+</p>
 
 {% if post_list %}
 <h3>Posts</h3>
@@ -24,12 +49,8 @@
 </ul>
 
 {% else %}
-{% if user.is_authenticated and user.username == blogger.user.username %}
-<a href="{% url 'add_post' %}">Add a new post</a>
-{% else %}
 <p>
   This blogger hasn't posted anything yet.
 </p>
-{% endif %}
 {% endif %}
 {% endblock %}

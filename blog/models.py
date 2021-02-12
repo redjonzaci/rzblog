@@ -1,3 +1,5 @@
+from ckeditor.fields import RichTextField
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
@@ -7,9 +9,14 @@ from django.utils import timezone
 class Blogger(models.Model):
     """Model representing a blog post author."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    bio = models.TextField(
-        max_length=400,
-        help_text="Enter your bio details here.")
+    bio = RichTextField(blank=True, null=True)
+    profile_pic = models.ImageField(
+        null=True, blank=True, upload_to="images/profile/")
+    website_url = models.CharField(max_length=200, null=True, blank=True)
+    linkedin_url = models.CharField(max_length=200, null=True, blank=True)
+    facebook_url = models.CharField(max_length=200, null=True, blank=True)
+    twitter_url = models.CharField(max_length=200, null=True, blank=True)
+    
 
     class Meta:
         ordering = ['user', 'bio']
@@ -33,7 +40,7 @@ class Category(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('index')
+        return reverse('posts-by-category', args=[str(self.id)])
 
 
 class Post(models.Model):
@@ -42,9 +49,7 @@ class Post(models.Model):
     author = models.ForeignKey(Blogger, on_delete=models.CASCADE, null=True)
     header_image = models.ImageField(
         null=True, blank=True, upload_to="images/")
-    description = models.TextField(
-        max_length=2000,
-        help_text="Enter your post text here.")
+    description = RichTextField(blank=True, null=True)
     post_date = models.DateTimeField(default=timezone.localtime)
     likes = models.ManyToManyField(User, related_name='post_likes', blank=True)
     category = models.ManyToManyField(Category)
@@ -67,9 +72,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     """Model representing a comment on a blog post."""
-    description = models.TextField(
-        max_length=400,
-        help_text="Enter your comment here.")
+    description = RichTextField(blank=True, null=True)
     post_date = models.DateTimeField(default=timezone.localtime)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True)

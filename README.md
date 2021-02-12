@@ -1,2 +1,2 @@
-# diy-blog
-Assessment from MDN's Django Tutorial
+# rz-blog
+Personal blog built with Django

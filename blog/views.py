@@ -8,9 +8,9 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from diyblog import settings
+from rzblog import settings
 
-from .forms import CreateForm, ReportForm
+from .forms import PostForm, ReportForm, BloggerForm, CommentForm, CategoryForm
 from .models import Blogger, Category, Comment, Post, Report
 
 
@@ -20,11 +20,13 @@ def index(request):
     num_bloggers = Blogger.objects.all().count()
     num_posts = Post.objects.all().count()
     total_comments = Comment.objects.all().count()
+    categories = Category.objects.all()
 
     context = {
         'num_bloggers': num_bloggers,
         'num_posts': num_posts,
         'total_comments': total_comments,
+        'categories': categories,
     }
 
     return render(request, 'index.html', context=context)
@@ -61,14 +63,14 @@ class PostDetailView(generic.DetailView):
                 comment.liked = True
             comment.save()
             context['comment.liked'] = comment.liked
-        context['categories'] = current_post.get_categories()
+        context['post_categories'] = current_post.get_categories()
         return context
 
 
 class PostCreate(LoginRequiredMixin, CreateView):
     """Form for adding a blog post. Requires login. """
     model = Post
-    form_class = CreateForm
+    form_class = PostForm
     template_name = "blog/add_post.html"
 
     def form_valid(self, form):
@@ -82,8 +84,8 @@ class PostCreate(LoginRequiredMixin, CreateView):
 class PostUpdate(LoginRequiredMixin, UpdateView):
     """Form for editing a blog post. Requires login of post author. """
     model = Post
+    form_class = PostForm
     template_name = "blog/edit_post.html"
-    fields = ['title', 'header_image', 'description', 'category']
 
     def get_context_data(self, **kwargs):
         """
@@ -154,7 +156,7 @@ class PostListByAuthorView(generic.ListView):
 
 class BloggerCreate(CreateView):
     model = Blogger
-    fields = ['bio']
+    form_class = BloggerForm
 
     def form_valid(self, form):
         blogger = form.save(commit=False)
@@ -166,15 +168,15 @@ class BloggerCreate(CreateView):
 class BloggerUpdate(LoginRequiredMixin, UpdateView):
     """Form for adding a bio to the blogger when registered. """
     model = Blogger
-    template_name = 'blog/add_blogger_bio.html'
-    fields = ['bio']
+    template_name = 'blog/edit_blogger.html'
+    form_class = BloggerForm
 
 
 # Comment SECTION
 class CommentCreate(LoginRequiredMixin, CreateView):
     """Form for adding a comment. Requires login. """
     model = Comment
-    fields = ['description']
+    form_class = CommentForm
 
     def get_context_data(self, **kwargs):
         """
@@ -211,7 +213,7 @@ class CommentUpdate(LoginRequiredMixin, UpdateView):
     """
     model = Comment
     template_name = "blog/edit_comment.html"
-    fields = ['description']
+    form_class = CommentForm
 
     def get_context_data(self, **kwargs):
         """
@@ -317,10 +319,13 @@ class PostListByCategoryView(generic.ListView):
         context['category'] = get_object_or_404(Category, pk=self.kwargs['pk'])
         return context
 
+    def get_success_url(self):
+        return reverse('posts-by-category', kwargs={'pk': self.kwargs['pk'], })
+
 
 class CategoryCreate(LoginRequiredMixin, CreateView):
     """Form for adding a category. Requires login. """
     model = Category
     template_name = "blog/add_category.html"
-    fields = ['name']
+    form_class = CategoryForm
     success_url = reverse_lazy('categories')
