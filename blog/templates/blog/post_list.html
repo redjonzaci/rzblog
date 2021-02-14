@@ -1,22 +1,21 @@
 {% extends "base_generic.html" %}
+{% load static %}
 
 {% block content %}
-<h1>All blog posts</h1>
+<h1 id="header">Posts</h1>
 
 {% if post_list %}
-<ul>
+<div id="elements">
   {% for post in post_list %}
-  <li>
-    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-    ({{post.post_date}}) —
-    <a href="{% url 'posts-by-author' post.author.pk %}">{{ post.author }}</a>
-    {% if user.is_authenticated and user.username == post.author.user.username %} 
-    — <small>(<a href="{% url 'edit_post' post.pk %}">Edit</a>)</small> 
-    — <small>(<a href="{% url 'delete_post' post.pk %}">Delete</a>)</small>
-    {% endif %} 
-    — {{ post.total_likes }}
-    like{% if post.total_likes > 1 %}s{% endif %}
-  </li>
+  <div id="post">
+    <a style="font-size: xx-large;" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+    <br>
+    Author: <a href="{% url 'posts-by-author' post.author.pk %}">{{ post.author }}</a>
+    <br>
+    {{ post.post_date.date }}
+    <br>
+    Likes: {{ post.total_likes }}
+  </div>
   {% endfor %}
 </ul>
 

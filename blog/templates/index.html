@@ -9,12 +9,22 @@
     Register as blogger
   </a>
 {% endif %}
-<h1>Personal Blog Home</h1>
-<p>Welcome to <strong>Redjon Zaci's</strong> personal blog site!</p>
-<p>This blog site has the following stats:</p>
-<ul>
-  <li><strong>Bloggers:</strong> {{ num_bloggers }}</li>
-  <li><strong>Blog posts:</strong> {{ num_posts }}</li>
-  <li><strong>Total comments:</strong> {{ total_comments }}</li>
-</ul>
+<h1 id="header">RZBlog Home</h1>
+<div class="d-flex flex-column align-items-sm-center">
+  <p>Welcome to
+    <strong>Redjon Zaci's</strong>
+    personal blog site!</p>
+  <p>This blog site has the following stats:</p>
+  <u class="list-group">
+    <li id="list-item" class="list-group-item list-group-item-dark">
+      Bloggers: {{ num_bloggers }}
+    </li>
+    <li id="list-item" class="list-group-item list-group-item-dark">
+      Blog posts: {{ num_posts }}
+    </li>
+    <li id="list-item" class="list-group-item list-group-item-dark">
+      Total comments: {{ total_comments }}
+    </li>
+  </ul>
+</div>
 {% endblock %}

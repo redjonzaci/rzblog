@@ -2,20 +2,20 @@
 {% load static %}
 
 {% block content %}
-<h1>{{ blogger }}</h1>
+<h1 id="header">{{ blogger }}</h1>
 {% if blogger.profile_pic %}
   <img
     src="{{ blogger.profile_pic.url }}"
     alt="Profile Picture"
     width="20%"
-    class="rounded-circle"
+    class="rounded-circle mx-auto d-block"
   >
 {% else %}
   <img
     src="{% static 'images/default_profile_pic.jpg' %}"
     alt="Default Profile Picture"
     width="20%"
-    class="rounded-circle"
+    class="rounded-circle mx-auto d-block"
   >
 {% endif %}
 <br>
@@ -41,8 +41,8 @@
 <ul>
   {% for post in post_list %}
   <li>
-    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-    ({{ post.post_date }}) — {{ post.total_likes }}
+    <a style="font-size: xx-large;" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+    ({{ post.post_date.date }}) — {{ post.total_likes }}
     like{% if post.total_likes > 1 %}s{% endif %}
   </li>
   {% endfor %}

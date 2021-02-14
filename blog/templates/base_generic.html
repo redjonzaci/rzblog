@@ -52,13 +52,13 @@
               >
                 Create
               </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <ul id="dark-dropdown" class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
                 <li>
                   <a
                     class="dropdown-item"
                     href="{% url 'add_post' %}"
                   >
-                    Add a new post
+                    New post
                   </a>
                 </li>
                 <li>
@@ -66,17 +66,17 @@
                       class="dropdown-item" 
                       href="{% url 'add_category' %}"
                     >
-                      Add a new category
+                      New category
                     </a>
                 </li>
               </ul>
             </li>
             {% endif %}
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{% url 'posts' %}">All blog posts</a>
+              <a class="nav-link" aria-current="page" href="{% url 'posts' %}">Posts</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{% url 'bloggers' %}">All bloggers</a>
+              <a class="nav-link" aria-current="page" href="{% url 'bloggers' %}">Bloggers</a>
             </li>
             <li class="nav-item dropdown">
               <a
@@ -88,7 +88,7 @@
               >
                 Categories
               </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <ul id="dark-dropdown" class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
                 <li>
                   <a
                     class="dropdown-item"
@@ -116,7 +116,6 @@
           <ul class="navbar-nav ml-auto">
             <button
               class="btn btn-outline-success me-2"
-              type="button"
               onclick="toggle_theme()"
             >
               Switch Theme
@@ -133,7 +132,8 @@
                 User
               </a>
               <div
-                class="dropdown-menu"
+                id="dark-dropdown"
+                class="dropdown-menu dropdown-menu-dark"
                 aria-labelledby="navbarDropdown"
                 style="right: 0; left: auto;"
               >
@@ -187,7 +187,7 @@
     {% endblock %}
     <div class="container-fluid">
       <div class="row">
-        <div class="col-sm-10">
+        <div class="col-sm-12">
           {% block content %}{% endblock %}
           {% block pagination %}
           {% if is_paginated %}

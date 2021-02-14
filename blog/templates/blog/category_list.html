@@ -1,15 +1,16 @@
 {% extends "base_generic.html" %}
+{% load static %}
 
 {% block content %}
-<h1>Categories</h1>
+<h1 id="header">Categories</h1>
 {% if category_list %}
-<ul>
+<div id="elements">
   {% for category in category_list %}
-  <li>
-    <a href="{% url 'posts-by-category' category.pk %}">{{ category }}</a>
-  </li>
+  <div id="element">
+    <a style="font-size: xx-large;" href="{% url 'posts-by-category' category.pk %}">{{ category }}</a>
+  </div>
   {% endfor %}
-</ul>
+</div>
 {% else %}
 <p>There are no categories yet.</p>
 {% endif %}

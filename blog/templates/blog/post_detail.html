@@ -2,39 +2,46 @@
 {% load static %}
 
 {% block content %}
-<h1>{{ post.title }}</h1>
+<div class="d-flex flex-column align-items-sm-center">
+  <h1>{{ post.title }}</h1>
+  <a href="{% url 'posts-by-author' post.author.pk %}">{{ post.author }}</a> {{ post.post_date.date }}
+</div>
 {% if user.is_authenticated and user.username == post.author.user.username %}
-— <small>(<a href="{% url 'edit_post' post.pk %}">Edit</a>)</small>
-— <small>(<a href="{% url 'delete_post' post.pk %}">Delete</a>)</small>
+  <form style="display: inline;" action="{% url 'edit_post' post.pk %}" method="post">
+    {% csrf_token %}
+    <button class="btn btn-primary">Edit</button>
+  </form>
+  <a href="{% url 'delete_post' post.pk %}">Delete</a>
 {% endif %}
-<p>
-  <a href="{% url 'posts-by-author' post.author.pk %}">{{ post.author }}</a>
-  <br>
-  {{ post.post_date }}
-</p>
 {% if post.header_image %}
 <img
   src="{{ post.header_image.url }}"
-  width="100%"
+  style="display: block; margin-left: auto; margin-right: auto; width: 50%;"
   height="25%"
  >
 {% endif %}
-<p>{{ post.description|safe }}</p>
+<p>
+  {{ post.description|safe }}
+</p>
 <p><strong>Category:</strong>
   {% if post_categories %}
     {% for category in post_categories %}
       {{ category }},
     {% endfor %}
-    - <small><a href="{% url 'edit_post' post.pk %}"> Change categories </a></small>
+    {% if user.is_authenticated and user.username == post.author.user.username %}
+    - <small>
+        <a href="{% url 'edit_post' post.pk %}">Change categories</a>
+      </small>
+    {% endif %}
   {% else %}
     {% if user.is_authenticated and user.username == post.author.user.username %}
-    <a href="{% url 'edit_post' post.pk %}"> Add a category </a>
+    <a href="{% url 'edit_post' post.pk %}">Add a category</a>
     {% endif %}
   {% endif %}
-  </p>
+</p>
 <hr />
 <form action="{% url 'like_post' post.pk %}" method="post">
-  {% csrf_token %} 
+  {% csrf_token %}
   {% if user.is_authenticated %} 
     {% if liked %}
     <button
@@ -59,7 +66,8 @@
   <p>
     <a href="{% url 'login' %}?next={{ request.path }}">Login</a> to like this post
   </p>
-  {% endif %} — {{ total_likes }} like(s)
+  {% endif %} — {{ total_likes }}
+  like{% if post.total_likes > 1 %}s{% endif %}
 </form>
 <br>
 <div id="profile-card" class="card mb-3 bg-dark text-white">

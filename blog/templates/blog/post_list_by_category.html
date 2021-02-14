@@ -1,15 +1,16 @@
 {% extends "base_generic.html" %}
+{% load static %}
 
 {% block content %}
-<h1>Category: {{ category }}</h1>
+<h1 id="header">{{ category }}</h1>
 
 {% if post_list %}
 <h3>Posts</h3>
 <ul>
   {% for post in post_list %}
   <li>
-    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-    ({{post.post_date}}) — {{ post.total_likes }}
+    <a style="font-size: xx-large;" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+    ({{ post.post_date.date }}) — {{ post.total_likes }}
     like{% if post.total_likes > 1 %}s{% endif %}
   </li>
   {% endfor %}
