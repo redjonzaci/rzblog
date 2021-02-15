@@ -7,10 +7,7 @@
   <a href="{% url 'posts-by-author' post.author.pk %}">{{ post.author }}</a> {{ post.post_date.date }}
 </div>
 {% if user.is_authenticated and user.username == post.author.user.username %}
-  <form style="display: inline;" action="{% url 'edit_post' post.pk %}" method="post">
-    {% csrf_token %}
-    <button class="btn btn-primary">Edit</button>
-  </form>
+  <a href="{% url 'edit_post' post.pk %}">Edit</a>
   <a href="{% url 'delete_post' post.pk %}">Delete</a>
 {% endif %}
 {% if post.header_image %}
@@ -121,10 +118,12 @@
   {% for comment in post.comment_set.all %}
   <hr />
   <p>
-    {{ comment.author }} ({{ comment.post_date }}) - {{ comment.description }} 
+    {{ comment.description|safe }}
+    {{ comment.author }} ({{ comment.post_date }})
+    <br>
     {% if user.is_authenticated and user.username == comment.author.username %} 
-    — <small> (<a href="{% url 'edit_comment' comment.pk %}">Edit</a>) </small> 
-    — <small> (<a href="{% url 'delete_comment' comment.pk %}">Delete</a>) </small>
+    <small> (<a href="{% url 'edit_comment' comment.pk %}">Edit</a>) </small> 
+    <small> (<a href="{% url 'delete_comment' comment.pk %}">Delete</a>) </small>
     {% endif %}
   </p>
   <form action="{% url 'like_comment' post.pk %}" method="post">
@@ -154,7 +153,7 @@
       <a href="{% url 'login' %}?next={{ request.path }}">Login</a> to like this post
     </p>
     {% endif %} — {{ comment.total_likes }}
-    like{% if comment.total_likes > 1 %}s{% endif %}.
+    like{% if comment.total_likes > 1 %}s{% endif %}
   </form>
   {% endfor %}
   <hr />

@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<h1>Delete: {{ comment }}</h1>
+<h1>Delete: {{ comment|safe }}</h1>
 <div class= "form-group">
   <form method="post">
     {% csrf_token %}
